@@ -1289,74 +1289,122 @@ function App() {
   const currentBreadcrumbs = getBreadcrumbs();
 
   return (
-    <div className="app-container">
-      <header className="header">
-        <div className="header-left">
-          <h1 className="header-title">Claims Management</h1>
-          {currentBreadcrumbs.length > 1 && (
-            <div className="breadcrumbs">
-              {currentBreadcrumbs.map((crumb, index) => (
-                <React.Fragment key={index}>
-                  <a
-                    href="#"
-                    onClick={() => navigateTo(crumb.screen, crumb.params)}
-                    style={{ color: index === currentBreadcrumbs.length - 1 ? 'var(--text-main)' : 'var(--text-secondary)' }}
-                  >
-                    {crumb.label}
-                  </a>
-                  {index < currentBreadcrumbs.length - 1 && <span>/</span>}
-                </React.Fragment>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="header-right">
-          <input type="text" placeholder="Global Search..." className="global-search-input" />
-          <button className="button button-primary" onClick={() => navigateTo('CLAIM_REGISTRATION')} style={{ marginLeft: 'var(--spacing-md)' }}>
-            <span className="icon icon-plus-circle"></span> Initiate Claim
-          </button>
-          <button className="button button-secondary">
-            <span className="icon icon-notifications"></span> Notifications
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-            <span className="icon icon-user"></span>
-            <span>{USER_DATA.name} ({USER_DATA.role})</span>
-            <button className="button button-secondary" onClick={() => alert('Logged out!')} style={{ marginLeft: 'var(--spacing-md)' }}>
-              <span className="icon icon-logout"></span> Logout
-            </button>
+  <div className="app-container">
+
+    {/* ✅ HEADER FIXED */}
+    <header className="header">
+      <div className="header-left">
+        <h1 className="header-title">Claims Management</h1>
+
+        {currentBreadcrumbs.length > 1 && (
+          <div className="breadcrumbs">
+            {currentBreadcrumbs.map((crumb, index) => (
+              <React.Fragment key={index}>
+                <a
+                  href="#"
+                  onClick={() => navigateTo(crumb.screen, crumb.params)}
+                  style={{
+                    color:
+                      index === currentBreadcrumbs.length - 1
+                        ? 'var(--text-main)'
+                        : 'var(--text-secondary)',
+                  }}
+                >
+                  {crumb.label}
+                </a>
+                {index < currentBreadcrumbs.length - 1 && <span>/</span>}
+              </React.Fragment>
+            ))}
           </div>
-        </header>
-
-      <div className="layout-with-sidebar">
-        {showSidebar && (
-          <aside className="nav-sidebar">
-            {Object.entries(NAVIGATION_ITEMS).reduce((acc, [category, items]) => {
-              const allowedItems = items.filter(item => item.roles === undefined || item.roles.includes(USER_DATA.role));
-              if (allowedItems.length > 0) {
-                acc.push(<h4 key={category} style={{ marginTop: 'var(--spacing-md)', marginBottom: 'var(--spacing-xs)', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', textTransform: 'uppercase' }}>{category}</h4>);
-                allowedItems.forEach(item => (
-                  acc.push(
-                    <div
-                      key={item.screen}
-                      className={`nav-sidebar-item ${view.screen === item.screen ? 'active' : ''}`}
-                      onClick={() => navigateTo(item.screen, item.params)}
-                    >
-                      <span className={`icon ${item.icon}`}></span> {item.label}
-                    </div>
-                  )
-                ));
-              }
-              return acc;
-            }, [])}
-          </aside>
         )}
-
-        <main className="main-content-area">
-          {renderContent()}
-        </main>
       </div>
+
+      <div className="header-right">
+        <input
+          type="text"
+          placeholder="Global Search..."
+          className="global-search-input"
+        />
+
+        <button
+          className="button button-primary"
+          onClick={() => navigateTo('CLAIM_REGISTRATION')}
+          style={{ marginLeft: 'var(--spacing-md)' }}
+        >
+          Initiate Claim
+        </button>
+
+        <button className="button button-secondary">
+          Notifications
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+          <span>{USER_DATA.name} ({USER_DATA.role})</span>
+
+          <button
+            className="button button-secondary"
+            onClick={() => alert('Logged out!')}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    {/* ✅ LAYOUT FIXED */}
+    <div className="layout-with-sidebar">
+
+      {showSidebar && (
+        <aside className="nav-sidebar">
+          {Object.entries(NAVIGATION_ITEMS).reduce((acc, [category, items]) => {
+            const allowedItems = items.filter(
+              (item) => !item.roles || item.roles.includes(USER_DATA.role)
+            );
+
+            if (allowedItems.length > 0) {
+              acc.push(
+                <h4
+                  key={category}
+                  style={{
+                    marginTop: 'var(--spacing-md)',
+                    marginBottom: 'var(--spacing-xs)',
+                    color: 'var(--text-muted)',
+                    fontSize: 'var(--font-size-sm)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {category}
+                </h4>
+              );
+
+              allowedItems.forEach((item) => {
+                acc.push(
+                  <div
+                    key={item.screen}
+                    className={`nav-sidebar-item ${
+                      view.screen === item.screen ? 'active' : ''
+                    }`}
+                    onClick={() => navigateTo(item.screen, item.params)}
+                  >
+                    {item.label}
+                  </div>
+                );
+              });
+            }
+
+            return acc;
+          }, [])}
+        </aside>
+      )}
+
+      {/* ✅ MAIN CONTENT */}
+      <main className="main-content-area">
+        {renderContent()}
+      </main>
+
     </div>
-  );
+  </div>
+);
 }
 
 export default App;
